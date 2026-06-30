@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Lancelot&amp;family=Fraunces:opsz,wght@9..144,300;9..144,400&amp;family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: rgb(12,106,110); }
+  .menu-item { position: relative; overflow: hidden; z-index: 0; flex: 1; display: flex; align-items: center; justify-content: center; gap: 9px; height: 100%; color: #efe9dd; text-decoration: none; font-size: 16px; font-weight: 400; letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap; transition: color 0.45s cubic-bezier(0.16,1,0.3,1); }
+  .menu-item::before { content: ""; position: absolute; inset: 0; background: #efe9dd; transform: scaleY(0); transform-origin: center bottom; transition: transform 0.55s cubic-bezier(0.16,1,0.3,1); z-index: -1; }
+  .menu-item:hover::before { transform: scaleY(1); }
+  .menu-item:hover { color: #14110e !important; }
+  .menu-item.active { color: #14110e; }
+  .menu-item.active::before { transform: scaleY(1); }
+  .vline { width: 1px; height: 100%; background: rgba(238,230,217,0.5); flex: none; transform-origin: top center; }
+  .menu-spacer { flex: 1; }
+  .mi-dot { width: 4px; height: 4px; border-radius: 50%; background: #d8c8ac; flex: none; }
+  .reveal-up { opacity: 0; transform: translateY(36px); transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1); }
+  .reveal-up.in { opacity: 1; transform: translateY(0); }
+  .pill-btn { position: relative; overflow: hidden; z-index: 0; display: inline-flex; align-items: center; justify-content: center; padding: 16px 34px; border-radius: 40px; border: 1px solid rgb(12,106,110); color: rgb(12,106,110); text-decoration: none; font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; transition: color 0.45s cubic-bezier(0.16,1,0.3,1); }
+  .pill-btn::before { content: ""; position: absolute; inset: 0; background: rgb(12,106,110); border-radius: 40px; transform: scaleY(0); transform-origin: center bottom; transition: transform 0.55s cubic-bezier(0.16,1,0.3,1); z-index: -1; }
+  .pill-btn:hover::before { transform: scaleY(1); }
+  .pill-btn:hover { color: #f3efe6 !important; }
+  .footer-btn { position: relative; overflow: hidden; z-index: 0; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; height: 172px; border: 1px solid rgba(197,190,177,0.5); border-radius: 48px; color: rgb(197,190,177); text-decoration: none; transition: color 0.5s cubic-bezier(0.16,1,0.3,1); }
+  .footer-btn::before { content: ""; position: absolute; inset: 0; background: rgba(197,190,177,0.95); border-radius: 48px; transform: scaleY(0); transform-origin: center bottom; transition: transform 0.55s cubic-bezier(0.16,1,0.3,1); z-index: -1; }
+  .footer-btn:hover::before { transform: scaleY(1); }
+  .footer-btn:hover { color: rgb(12,106,110) !important; }
+  .ig-handle { position: relative; text-transform: uppercase; cursor: pointer; }
+  .ig-handle::after { content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px; background: currentColor; transform: scaleX(0); transform-origin: left center; transition: transform 0.55s cubic-bezier(0.16,1,0.3,1); }
+  .ig-handle:hover::after { transform: scaleX(1); }
+  @keyframes wipe-right { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes grow-down { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  @keyframes drop-in { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes rise-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+  .eyebrow { font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: rgb(12,106,110); opacity: 0.6; display: block; }
+  .mask-line { display: block; overflow: hidden; padding-bottom: 0.04em; }
+  .mask-inner { display: block; opacity: 0; will-change: transform, opacity; }
+  .s-reveal { opacity: 0; will-change: transform, opacity; }
+  .bnum { font-family: 'Fraunces', serif; font-weight: 300; font-variant-numeric: tabular-nums; }
+  .gallery-outer { user-select: none; }
+  .gallery-outer:active { cursor: grabbing; }
+  .gallery-track img { pointer-events: none; }
+  .hero-cta { display: inline-flex; align-items: center; justify-content: center; margin-top: 40px; padding: 18px 46px; border-radius: 40px; background: #efe9dd; color: rgb(12,106,110); text-decoration: none; font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; position: relative; overflow: hidden; z-index: 0; transition: color 0.45s cubic-bezier(0.16,1,0.3,1); animation: rise-in 1.2s cubic-bezier(0.16,1,0.3,1) 1.9s both; }
+  .hero-cta::before { content: ""; position: absolute; inset: 0; background: rgba(236,226,206,0.18); transform: scaleY(0); transform-origin: center bottom; transition: transform 0.55s cubic-bezier(0.16,1,0.3,1); z-index: -1; }
+  .hero-cta:hover::before { transform: scaleY(1); }
+  .perfect-item { position: relative; padding: 22px 4px; font-family: 'Fraunces', serif; font-weight: 300; font-size: clamp(22px, 2vw, 30px); line-height: 1.2; color: rgb(12,106,110); }
+  .pf-content { display: flex; align-items: center; gap: 18px; }
+  .perfect-item .pdot { width: 7px; height: 7px; border-radius: 50%; background: rgb(12,106,110); flex: none; opacity: 0.6; }
+  .pf-line { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: rgba(12,106,110,0.22); transform: scaleX(0); transform-origin: left center; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+</helmet>
+
+<div style="background: rgb(12,106,110); min-height: 100vh; display: flex; flex-direction: column; align-items: center;">
+
+<!-- ===== HERO ===== -->
+<section data-screen-label="Hotels Hero" ref="{{ setHero }}" style="position: relative; width: 100%; height: 100vh; min-height: 860px; flex: none; overflow: hidden; background: rgb(12,106,110); font-family: 'Manrope', sans-serif;">
+  <div style="position: absolute; inset: 0; z-index: 0; background: rgb(12,106,110);"></div>
+  <canvas ref="{{ setCanvas }}" style="position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; display: block;"></canvas>
+
+  <div style="position: absolute; top: 0; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; z-index: 1;">
+
+    <div style="position: absolute; z-index: 2; top: 30px; left: 28px; right: calc(50% + 86px); height: 1px; background: rgba(238,230,217,0.42); transform-origin: left center; animation: wipe-right 1.3s cubic-bezier(0.16,1,0.3,1) 0.5s both;"></div>
+    <div style="position: absolute; z-index: 2; top: 84px; left: 28px; right: calc(50% + 86px); height: 1px; background: rgba(238,230,217,0.42); transform-origin: left center; animation: wipe-right 1.3s cubic-bezier(0.16,1,0.3,1) 0.6s both;"></div>
+    <div style="position: absolute; z-index: 2; top: 30px; right: 28px; left: calc(50% + 86px); height: 1px; background: rgba(238,230,217,0.42); transform-origin: left center; animation: wipe-right 1.3s cubic-bezier(0.16,1,0.3,1) 0.55s both;"></div>
+    <div style="position: absolute; z-index: 2; top: 84px; right: 28px; left: calc(50% + 86px); height: 1px; background: rgba(238,230,217,0.42); transform-origin: left center; animation: wipe-right 1.3s cubic-bezier(0.16,1,0.3,1) 0.65s both;"></div>
+
+    <div style="position: absolute; z-index: 3; top: 30px; height: 54px; left: 28px; right: calc(50% + 86px); display: flex; animation: drop-in 1s cubic-bezier(0.16,1,0.3,1) 0.9s both;">
+      <a href="Aloha Treatments.dc.html" class="menu-item"><span class="mi-dot"></span><span>Treatments</span></a>
+      <sc-if value="{{ showMenuDividers }}" hint-placeholder-val="{{ true }}"><span class="vline" style="animation: grow-down 0.9s cubic-bezier(0.16,1,0.3,1) 0.7s both;"></span></sc-if>
+      <a href="Aloha About.dc.html" class="menu-item"><span class="mi-dot"></span><span>About Us</span></a>
+      <sc-if value="{{ showMenuDividers }}" hint-placeholder-val="{{ true }}"><span class="vline" style="animation: grow-down 0.9s cubic-bezier(0.16,1,0.3,1) 0.78s both;"></span></sc-if>
+      <span class="menu-spacer"></span>
+    </div>
+
+    <div style="position: absolute; z-index: 3; top: 30px; height: 54px; right: 28px; left: calc(50% + 86px); display: flex; animation: drop-in 1s cubic-bezier(0.16,1,0.3,1) 0.9s both;">
+      <span class="menu-spacer"></span>
+      <sc-if value="{{ showMenuDividers }}" hint-placeholder-val="{{ true }}"><span class="vline" style="animation: grow-down 0.9s cubic-bezier(0.16,1,0.3,1) 0.78s both;"></span></sc-if>
+      <a href="Aloha Hotels.dc.html" class="menu-item active"><span class="mi-dot"></span><span>For Hotels</span></a>
+      <sc-if value="{{ showMenuDividers }}" hint-placeholder-val="{{ true }}"><span class="vline" style="animation: grow-down 0.9s cubic-bezier(0.16,1,0.3,1) 0.7s both;"></span></sc-if>
+      <a href="Aloha Contacts.dc.html" class="menu-item"><span class="mi-dot"></span><span>Contact Us</span></a>
+    </div>
+
+    <a href="Aloha Landing.dc.html"><img src="assets/logo.png" alt="Aloha Massage Poolside Wellness" style="position: absolute; z-index: 4; top: 12px; left: 50%; transform: translateX(-50%); height: 146px; width: auto; filter: brightness(1.32) saturate(0.62); animation: fade-in 1.3s ease-out 0.3s both;"></a>
+
+    <div style="position: absolute; z-index: 3; top: 50%; transform: translateY(-50%); left: 28px; right: 28px; display: flex; flex-direction: column; align-items: center; text-align: center;">
+      <span style="font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.2em; color: rgba(236,226,206,0.9); animation: rise-in 1.1s cubic-bezier(0.16,1,0.3,1) 0.9s both;">FOR HOTELS &amp; RESORTS</span>
+      <h1 style="margin: 16px 0 0; font-family: 'Fraunces', serif; font-weight: 300; font-size: clamp(64px, 7.8vw, 92px); line-height: 1.02; letter-spacing: 0.04em; color: rgba(236,226,206,0.95); animation: rise-in 1.3s cubic-bezier(0.16,1,0.3,1) 1.1s both;">They came<br>for the sun.</h1>
+      <p style="margin: 28px 0 0; max-width: 600px; font-family: 'Manrope', sans-serif; font-size: 17px; line-height: 1.65; letter-spacing: 0.01em; color: #f2eee6; opacity: 0.92; animation: rise-in 1.2s cubic-bezier(0.16,1,0.3,1) 1.5s both;">Give them a reason to stay a little longer &mdash; a premium wellness experience, right by the pool, with no extra workload for your team.</p>
+      <a href="Aloha Contacts.dc.html" class="hero-cta">Inquire Now</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== PANEL (cream, curved top — manifesto + gallery) ===== -->
+<section data-screen-label="Hotels Content" ref="{{ setPanel }}" style="position: relative; z-index: 2; flex: none; width: 100%; margin-top: -24px; background: rgb(217,217,217); border-top-left-radius: 50% 130px; border-top-right-radius: 50% 130px; overflow: hidden; font-family: 'Manrope', sans-serif; padding: 220px 0 0;">
+
+  <!-- MANIFESTO -->
+  <div style="width: min(920px, calc(100% - 120px)); margin: 60px auto 0; text-align: center;">
+    <span class="eyebrow s-reveal">Why hotels choose Aloha</span>
+
+    <div style="position: relative; margin: 34px 0 0;">
+      <h2 id="mv-normal" data-mask style="margin: 0; font-family: 'Fraunces', serif; font-weight: 300; font-style: italic; font-size: clamp(48px, 5.6vw, 80px); line-height: 1.07; letter-spacing: 0.02em; color: rgb(12,106,110);"><span class="mask-line"><span class="mask-inner">More value.</span></span><span class="mask-line"><span class="mask-inner">No extra workload.</span></span></h2>
+    </div>
+
+    <p class="s-reveal" data-delay="0.15" style="margin: 44px auto 0; max-width: 720px; font-family: 'Manrope', sans-serif; font-size: 20px; line-height: 1.75; color: rgb(12,106,110); opacity: 0.82; padding-bottom: 60px;">Aloha Massage is designed to elevate your resort without asking anything of your team. A refined poolside experience that adds real value to your guests&rsquo; stay &mdash; and to your hotel&rsquo;s identity.</p>
+  </div>
+
+  <!-- HORIZONTAL GALLERY (auto-loop + scroll-linked + draggable) -->
+  <div class="gallery-outer" ref="{{ setGalleryOuter }}" onMouseDown="{{ galleryMouseDown }}" style="margin-top: 120px; padding-bottom: 96px; overflow: hidden; cursor: grab; width: 100%;">
+    <div class="gallery-track" ref="{{ setGalleryTrack }}" style="display: flex; gap: 22px; width: max-content; will-change: transform;">
+      <div style="width: 400px; height: 520px; flex: none; border-radius: 14px; overflow: hidden; box-shadow: 0 18px 44px rgba(0,0,0,0.2);"><img src="assets/card-hotels.jpg" alt="" style="width:100%;height:100%;object-fit:cover;"></div>
+      <div style="width: 400px; height: 520px; flex: none; border-radius: 14px; overflow: hidden; box-shadow: 0 18px 44px rgba(0,0,0,0.2);"><img src="assets/hero-massage.png" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center 20%;"></div>
+      <div style="width: 400px; height: 520px; flex: none; border-radius: 14px; overflow: hidden; box-shadow: 0 18px 44px rgba(0,0,0,0.2);"><img src="assets/card-natural.jpg" alt="" style="width:100%;height:100%;object-fit:cover;"></div>
+      <div style="width: 400px; height: 520px; flex: none; border-radius: 14px; overflow: hidden; box-shadow: 0 18px 44px rgba(0,0,0,0.2);"><img src="assets/card-island.jpg" alt="" style="width:100%;height:100%;object-fit:cover;"></div>
+      <div style="width: 400px; height: 520px; flex: none; border-radius: 14px; overflow: hidden; box-shadow: 0 18px 44px rgba(0,0,0,0.2);"><img src="assets/card-hotels.jpg" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center 70%;"></div>
+      <div style="width: 400px; height: 520px; flex: none; border-radius: 14px; overflow: hidden; box-shadow: 0 18px 44px rgba(0,0,0,0.2);"><img src="assets/card-natural.jpg" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center 30%;"></div>
+      <div style="width: 400px; height: 520px; flex: none; border-radius: 14px; overflow: hidden; box-shadow: 0 18px 44px rgba(0,0,0,0.2);"><img src="assets/card-hotels.jpg" alt="" style="width:100%;height:100%;object-fit:cover;"></div>
+      <div style="width: 400px; height: 520px; flex: none; border-radius: 14px; overflow: hidden; box-shadow: 0 18px 44px rgba(0,0,0,0.2);"><img src="assets/hero-massage.png" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center 20%;"></div>
+      <div style="width: 400px; height: 520px; flex: none; border-radius: 14px; overflow: hidden; box-shadow: 0 18px 44px rgba(0,0,0,0.2);"><img src="assets/card-natural.jpg" alt="" style="width:100%;height:100%;object-fit:cover;"></div>
+      <div style="width: 400px; height: 520px; flex: none; border-radius: 14px; overflow: hidden; box-shadow: 0 18px 44px rgba(0,0,0,0.2);"><img src="assets/card-island.jpg" alt="" style="width:100%;height:100%;object-fit:cover;"></div>
+      <div style="width: 400px; height: 520px; flex: none; border-radius: 14px; overflow: hidden; box-shadow: 0 18px 44px rgba(0,0,0,0.2);"><img src="assets/card-hotels.jpg" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center 70%;"></div>
+      <div style="width: 400px; height: 520px; flex: none; border-radius: 14px; overflow: hidden; box-shadow: 0 18px 44px rgba(0,0,0,0.2);"><img src="assets/card-natural.jpg" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center 30%;"></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ===== REASONS SLIDER (5-card horizontal — slides left on scroll) ===== -->
+<section data-screen-label="Reasons" class="reasons-stage" style="width: 100%; height: 100vh; min-height: 720px; flex: none; position: relative; overflow: hidden; background: rgb(217,217,217); font-family: 'Manrope', sans-serif;">
+
+  <div class="reasons-h-track" style="position: absolute; top: 0; left: 0; display: flex; height: 100%;">
+
+    <!-- CARD 01 -->
+    <div class="r-card" style="width: 100vw; flex: none; height: 100%; display: flex; align-items: center; justify-content: center;">
+      <div style="width: 1344px; max-width: calc(100% - 130px); display: grid; grid-template-columns: 1fr 1.06fr; gap: 96px; align-items: center;">
+        <div style="height: clamp(360px, 62vh, 620px); border-radius: clamp(160px, 26vh, 280px) clamp(160px, 26vh, 280px) 14px 14px; overflow: hidden; box-shadow: 0 30px 66px rgba(0,0,0,0.26);"><img src="assets/card-hotels.jpg" alt="" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div>
+          <span class="eyebrow">01 &mdash; Added value</span>
+          <h3 style="margin: 24px 0 0; font-family: 'Fraunces', serif; font-weight: 300; font-size: clamp(36px, 3.8vw, 58px); line-height: 1.06; letter-spacing: 0.02em; color: rgb(12,106,110);">A spa experience.<br>No spa required.</h3>
+          <p style="margin: 30px 0 0; max-width: 520px; font-size: 18px; line-height: 1.78; color: rgb(12,106,110); opacity: 0.82;">Hotels can offer a premium wellness service without building or managing a spa facility &mdash; added value delivered directly to the poolside.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 02 -->
+    <div class="r-card" style="width: 100vw; flex: none; height: 100%; display: flex; align-items: center; justify-content: center;">
+      <div style="width: 1344px; max-width: calc(100% - 130px); display: grid; grid-template-columns: 1fr 1.06fr; gap: 96px; align-items: center;">
+        <div style="height: clamp(360px, 62vh, 620px); border-radius: clamp(160px, 26vh, 280px) clamp(160px, 26vh, 280px) 14px 14px; overflow: hidden; box-shadow: 0 30px 66px rgba(0,0,0,0.26);"><img src="assets/hero-massage.png" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center 20%;"></div>
+        <div>
+          <span class="eyebrow">02 &mdash; Guest experience</span>
+          <h3 style="margin: 24px 0 0; font-family: 'Fraunces', serif; font-weight: 300; font-size: clamp(36px, 3.8vw, 58px); line-height: 1.06; letter-spacing: 0.02em; color: rgb(12,106,110);">An extra reason<br>to come back.</h3>
+          <p style="margin: 30px 0 0; max-width: 520px; font-size: 18px; line-height: 1.78; color: rgb(12,106,110); opacity: 0.82;">Guests enjoy an additional relaxation activity during their stay &mdash; deepening their connection with the resort and making every holiday more memorable.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 03 -->
+    <div class="r-card" style="width: 100vw; flex: none; height: 100%; display: flex; align-items: center; justify-content: center;">
+      <div style="width: 1344px; max-width: calc(100% - 130px); display: grid; grid-template-columns: 1fr 1.06fr; gap: 96px; align-items: center;">
+        <div style="height: clamp(360px, 62vh, 620px); border-radius: clamp(160px, 26vh, 280px) clamp(160px, 26vh, 280px) 14px 14px; overflow: hidden; box-shadow: 0 30px 66px rgba(0,0,0,0.26);"><img src="assets/card-island.jpg" alt="" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div>
+          <span class="eyebrow">03 &mdash; Luxury atmosphere</span>
+          <h3 style="margin: 24px 0 0; font-family: 'Fraunces', serif; font-weight: 300; font-size: clamp(36px, 3.8vw, 58px); line-height: 1.06; letter-spacing: 0.02em; color: rgb(12,106,110);">The look and feel<br>of extraordinary.</h3>
+          <p style="margin: 30px 0 0; max-width: 520px; font-size: 18px; line-height: 1.78; color: rgb(12,106,110); opacity: 0.82;">The poolside setup improves the visual and emotional experience of the resort, elevating every corner of the guest&rsquo;s stay with quiet, tropical elegance.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 04 -->
+    <div class="r-card" style="width: 100vw; flex: none; height: 100%; display: flex; align-items: center; justify-content: center;">
+      <div style="width: 1344px; max-width: calc(100% - 130px); display: grid; grid-template-columns: 1fr 1.06fr; gap: 96px; align-items: center;">
+        <div style="height: clamp(360px, 62vh, 620px); border-radius: clamp(160px, 26vh, 280px) clamp(160px, 26vh, 280px) 14px 14px; overflow: hidden; box-shadow: 0 30px 66px rgba(0,0,0,0.26);"><img src="assets/card-natural.jpg" alt="" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div>
+          <span class="eyebrow">04 &mdash; Social media appeal</span>
+          <h3 style="margin: 24px 0 0; font-family: 'Fraunces', serif; font-weight: 300; font-size: clamp(36px, 3.8vw, 58px); line-height: 1.06; letter-spacing: 0.02em; color: rgb(12,106,110);">Moments<br>worth sharing.</h3>
+          <p style="margin: 30px 0 0; max-width: 520px; font-size: 18px; line-height: 1.78; color: rgb(12,106,110); opacity: 0.82;">The tropical aesthetics encourage guests to photograph and share their experience &mdash; extending the resort&rsquo;s reach organically, one beautiful post at a time.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 05 -->
+    <div class="r-card" style="width: 100vw; flex: none; height: 100%; display: flex; align-items: center; justify-content: center;">
+      <div style="width: 1344px; max-width: calc(100% - 130px); display: grid; grid-template-columns: 1fr 1.06fr; gap: 96px; align-items: center;">
+        <div style="height: clamp(360px, 62vh, 620px); border-radius: clamp(160px, 26vh, 280px) clamp(160px, 26vh, 280px) 14px 14px; overflow: hidden; box-shadow: 0 30px 66px rgba(0,0,0,0.26);"><img src="assets/card-hotels.jpg" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center 70%;"></div>
+        <div>
+          <span class="eyebrow">05 &mdash; Flexible &amp; effortless</span>
+          <h3 style="margin: 24px 0 0; font-family: 'Fraunces', serif; font-weight: 300; font-size: clamp(36px, 3.8vw, 58px); line-height: 1.06; letter-spacing: 0.02em; color: rgb(12,106,110);">Minimal effort.<br>Maximum impression.</h3>
+          <p style="margin: 30px 0 0; max-width: 520px; font-size: 18px; line-height: 1.78; color: rgb(12,106,110); opacity: 0.82;">Minimal operational involvement required from hotel management &mdash; Aloha handles everything, so your team stays focused on what matters most.</p>
+          <p style="margin: 30px 0 0; max-width: 520px; font-size: 16px; line-height: 1.6; color: rgb(12,106,110); opacity: 0.7;">Ready to bring Aloha to your poolside? Tell us about your resort and we&rsquo;ll design the experience around it.</p>
+          <a href="Aloha Contacts.dc.html" class="pill-btn" style="margin-top: 28px; align-self: flex-start;">INQUIRE NOW</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+<!-- ===== PERFECT FOR ===== -->
+<section data-screen-label="Perfect For" style="width: 100%; flex: none; background: rgb(217,217,217); font-family: 'Manrope', sans-serif; padding: 40px 0 150px;">
+  <div style="width: 1200px; max-width: calc(100% - 120px); margin: 0 auto;">
+    <div style="text-align: center;">
+      <span class="eyebrow s-reveal">Perfect for</span>
+      <h3 data-mask style="margin: 22px 0 0; font-family: 'Fraunces', serif; font-weight: 300; font-size: clamp(34px, 3.6vw, 54px); line-height: 1.1; letter-spacing: 0.02em; color: rgb(12,106,110);"><span class="mask-line"><span class="mask-inner">Made for places like yours.</span></span></h3>
+    </div>
+    <div style="margin-top: 56px; display: grid; grid-template-columns: 1fr 1fr; column-gap: 80px;">
+      <div class="perfect-item"><div class="pf-content"><span class="pdot"></span>Adults-only hotels</div><span class="pf-line"></span></div>
+      <div class="perfect-item"><div class="pf-content"><span class="pdot"></span>Hotels with active pool areas</div><span class="pf-line"></span></div>
+      <div class="perfect-item"><div class="pf-content"><span class="pdot"></span>Boutique resorts</div><span class="pf-line"></span></div>
+      <div class="perfect-item"><div class="pf-content"><span class="pdot"></span>Resorts without internal spa facilities</div><span class="pf-line"></span></div>
+      <div class="perfect-item"><div class="pf-content"><span class="pdot"></span>Relaxation-focused hospitality concepts</div><span class="pf-line"></span></div>
+      <div class="perfect-item"><div class="pf-content"><span class="pdot"></span>Wellness-oriented destinations</div><span class="pf-line"></span></div>
+    </div>
+    <div class="pf-btn" data-delay="0.1" style="margin-top: 64px; display: flex; justify-content: center;">
+      <a href="Aloha Contacts.dc.html" class="pill-btn">INQUIRE NOW</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<section data-screen-label="Footer" style="width: 100%; flex: none; background: rgb(12,106,110); color: rgb(197,190,177); font-family: 'Manrope', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 92px 0 46px; box-sizing: border-box;">
+  <div style="width: 1360px; max-width: calc(100% - 120px);">
+
+    <div class="reveal-up" style="display: flex; justify-content: center;">
+      <a href="Aloha Landing.dc.html"><img src="assets/logo.png" alt="Aloha Massage Poolside Wellness" style="height: 150px; width: auto; filter: brightness(1.45) saturate(0.55);"></a>
+    </div>
+
+    <div class="reveal-up" style="transition-delay: 0.1s; display: flex; gap: 40px; margin-top: 48px;">
+      <a href="#whatsapp" class="footer-btn">
+        <span style="font-family: 'Fraunces', serif; font-weight: 300; font-size: 64px; letter-spacing: 0.06em; line-height: 1;">WHATSAPP</span>
+        <span style="font-size: 16px; opacity: 0.8;">We&rsquo;re available every day</span>
+      </a>
+      <a href="#call" class="footer-btn">
+        <span style="font-family: 'Fraunces', serif; font-weight: 300; font-size: 64px; letter-spacing: 0.06em; line-height: 1;">CALL US</span>
+        <span style="font-size: 16px; opacity: 0.8;">We&rsquo;re available from 10am &ndash; 8pm</span>
+      </a>
+    </div>
+
+    <div class="reveal-up" style="transition-delay: 0.16s; margin-top: 64px; border-top: 1px solid rgba(197,190,177,0.4); display: flex; justify-content: space-between; padding: 24px 2px 0; font-size: 16px; letter-spacing: -0.02em;">
+      <span>MONDAY TO SUNDAY 10AM&ndash;8PM</span>
+      <span>TEL: 0376000000</span>
+      <span>TAZIO NUVOLARI STREET</span>
+    </div>
+
+    <div class="reveal-up" style="transition-delay: 0.1s; margin-top: 84px; display: flex; flex-direction: column; align-items: center;">
+      <p style="margin: 0; font-size: 16px; opacity: 0.85;">What&rsquo;s happening behind the scenes at Aloha</p>
+      <div style="display: flex; align-items: center; justify-content: center; gap: 22px; margin-top: 20px;">
+        <svg viewBox="0 0 48 48" style="width: 44px; height: 44px; flex: none; fill: none; stroke: rgb(197,190,177); stroke-width: 2.4;"><rect x="6" y="6" width="36" height="36" rx="11"></rect><circle cx="24" cy="24" r="9"></circle><circle cx="35" cy="13" r="2" fill="rgb(197,190,177)" stroke="none"></circle></svg>
+        <span class="ig-handle" style="font-family: 'Fraunces', serif; font-weight: 300; font-size: 54px; letter-spacing: 0.04em; line-height: 1;">alohamassage_poolsodewellness</span>
+      </div>
+    </div>
+
+    <p style="margin: 72px 0 0; text-align: center; font-size: 13px; letter-spacing: 0.06em; opacity: 0.65;">ALOHA MASSAGE POOLSIDE WELLNESS | ALL RIGHTS RESERVED 2026</p>
+
+  </div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;menuDividers&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;}}">
+class Component extends DCLogic {
+  setPanel = (el) => { this.panelEl = el; this.tryWater(); };
+  setHero = (el) => { this.heroEl = el; this.tryWater(); };
+  setCanvas = (el) => { this.canvasEl = el; this.tryWater(); };
+  setGalleryOuter = (el) => { this.galleryOuter = el; };
+  setGalleryTrack = (el) => { this.galleryTrack = el; };
+
+  galleryMouseDown = (e) => {
+    this._isDragging = true;
+    this._dragMoved = false;
+    this._dragStartX = e.clientX;
+    this._dragLastX = e.clientX;
+    this._galVel = 0;
+    document.addEventListener('mousemove', this._galleryMouseMove);
+    document.addEventListener('mouseup', this._galleryMouseUp);
+    e.preventDefault();
+  };
+
+  _galleryMouseMove = (e) => {
+    if (!this._isDragging) return;
+    const dx = e.clientX - this._dragLastX;
+    this._dragLastX = e.clientX;
+    if (Math.abs(e.clientX - this._dragStartX) > 3) this._dragMoved = true;
+    this._galleryX = (this._galleryX || 0) + dx;
+    this._galVel = dx;  // carry momentum on release
+  };
+
+  _galleryMouseUp = () => {
+    this._isDragging = false;
+    document.removeEventListener('mousemove', this._galleryMouseMove);
+    document.removeEventListener('mouseup', this._galleryMouseUp);
+  };
+
+  componentDidMount() {
+    this._raf = null;
+    this._galleryX = 0;
+    this._galVel = 0;
+    this._galleryLastScrollY = window.scrollY;
+    this._onScroll = () => {
+      // feed scroll delta into gallery velocity (down -> drift left, up -> drift right)
+      const y = window.scrollY;
+      const dy = y - this._galleryLastScrollY;
+      this._galleryLastScrollY = y;
+      if (this.galleryOuter) {
+        const rect = this.galleryOuter.getBoundingClientRect();
+        const vh = window.innerHeight;
+        if (rect.top < vh * 1.4 && rect.bottom > -vh * 0.4) {
+          this._galVel += -dy * 0.18;
+          this._galVel = Math.max(-22, Math.min(22, this._galVel));
+        }
+      }
+      if (this._raf) return;
+      this._raf = requestAnimationFrame(() => { this._raf = null; this.updateCurve(); });
+    };
+    window.addEventListener('scroll', this._onScroll, { passive: true });
+    this._onResize = () => { this.updateCurve(); this._galSetW = 0; };
+    window.addEventListener('resize', this._onResize);
+    this.updateCurve();
+    this.tryWater();
+    this.initStory();
+    this._galSetW = 0;
+    this._galleryRAF = requestAnimationFrame(this._galleryTick);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this._onScroll);
+    window.removeEventListener('resize', this._onResize);
+    document.removeEventListener('mousemove', this._galleryMouseMove);
+    document.removeEventListener('mouseup', this._galleryMouseUp);
+    if (window.ScrollTrigger) window.ScrollTrigger.getAll().forEach((t) => t.kill());
+    if (this._waterRAF) cancelAnimationFrame(this._waterRAF);
+    if (this._galleryRAF) cancelAnimationFrame(this._galleryRAF);
+    if (this._wResize) window.removeEventListener('resize', this._wResize);
+  }
+
+  _galleryTick = () => {
+    const track = this.galleryTrack;
+    if (track) {
+      // one-set width = offset of the duplicate's first tile (7th child)
+      if (!this._galSetW || this._galSetW < 10) {
+        const kids = track.children;
+        if (kids.length >= 7) this._galSetW = kids[6].offsetLeft - kids[0].offsetLeft;
+      }
+      const setW = this._galSetW || 0;
+      const AUTO = -0.35;  // slow idle drift to the left
+      if (this._isDragging) {
+        // position already updated in mousemove
+      } else {
+        this._galleryX += AUTO + this._galVel;
+        this._galVel *= 0.88;  // friction
+        if (Math.abs(this._galVel) < 0.02) this._galVel = 0;
+      }
+      // seamless wrap
+      if (setW > 0) {
+        if (this._galleryX <= -setW) this._galleryX += setW;
+        else if (this._galleryX > 0) this._galleryX -= setW;
+      }
+      track.style.transform = 'translate3d(' + this._galleryX + 'px,0,0)';
+    }
+    this._galleryRAF = requestAnimationFrame(this._galleryTick);
+  };
+
+  checkReveals() {
+    const vh = window.innerHeight || 800;
+    document.querySelectorAll('.reveal-up:not(.in)').forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.top < vh * 0.86 && r.bottom > 0) el.classList.add('in');
+    });
+  }
+
+  updateCurve() {
+    this.checkReveals();
+    const el = this.panelEl;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const vh = window.innerHeight || 800;
+    let p = 1 - (rect.top / vh);
+    p = Math.max(0, Math.min(1, p));
+    const H = 165 - p * 110;
+    el.style.borderTopLeftRadius = '50% ' + H + 'px';
+    el.style.borderTopRightRadius = '50% ' + H + 'px';
+  }
+
+  initStory() {
+    if (this._storyInit) return;
+    let tries = 0;
+    const go = () => {
+      if (this._storyInit) return;
+      this._storyInit = true;
+      this.runStory();
+    };
+    const wait = () => {
+      if (window.gsap && window.ScrollTrigger) {
+        if (document.readyState === 'complete') { requestAnimationFrame(go); }
+        else { window.addEventListener('load', () => requestAnimationFrame(go), { once: true }); setTimeout(go, 2600); }
+        return;
+      }
+      if (tries++ > 240) { this.revealFallback(); return; }
+      requestAnimationFrame(wait);
+    };
+    wait();
+  }
+
+  revealFallback() {
+    document.querySelectorAll('.s-reveal').forEach((e) => { e.style.opacity = 1; e.style.transform = 'none'; });
+    document.querySelectorAll('.mask-inner').forEach((e) => { e.style.transform = 'none'; e.style.opacity = 1; });
+  }
+
+  runStory() {
+    const gsap = window.gsap, ST = window.ScrollTrigger;
+    gsap.registerPlugin(ST);
+    document.querySelectorAll('[data-mask]').forEach((grp) => {
+      const inners = grp.querySelectorAll('.mask-inner');
+      gsap.fromTo(inners, { yPercent: 110, opacity: 0 }, {
+        yPercent: 0, opacity: 1, duration: 1.15, ease: 'power4.out', stagger: 0.11,
+        scrollTrigger: { trigger: grp, start: 'top 86%', once: true }
+      });
+    });
+    gsap.utils.toArray('.s-reveal').forEach((el) => {
+      gsap.fromTo(el, { y: 52, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 1.1, ease: 'power3.out',
+        delay: parseFloat(el.dataset.delay || 0),
+        scrollTrigger: { trigger: el, start: 'top 90%', once: true }
+      });
+    });
+    this.initPinned();
+    this.initPerfect();
+    const refresh = () => ST.refresh();
+    window.addEventListener('load', refresh);
+    document.querySelectorAll('img').forEach((im) => { if (!im.complete) im.addEventListener('load', refresh); });
+    setTimeout(refresh, 700);
+  }
+
+  initPerfect() {
+    const gsap = window.gsap, ST = window.ScrollTrigger;
+    const section = document.querySelector('[data-screen-label="Perfect For"]');
+    if (!section) return;
+    const lines = section.querySelectorAll('.pf-line');
+    const contents = section.querySelectorAll('.pf-content');
+    const btnWrap = section.querySelector('.pf-btn');
+    gsap.set(lines, { scaleX: 0 });
+    gsap.set(contents, { opacity: 0, y: 22 });
+    if (btnWrap) gsap.set(btnWrap, { opacity: 0, y: 30 });
+
+    const tl = gsap.timeline({ scrollTrigger: { trigger: section, start: 'top 80%', once: true } });
+    // lines wipe in first (like the menu lines), then the text fades in
+    tl.to(lines, { scaleX: 1, duration: 0.6, ease: 'power3.out', stagger: 0.07 }, 0)
+      .to(contents, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', stagger: 0.07 }, 0.38);
+    if (btnWrap) tl.to(btnWrap, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '>-0.15');
+  }
+
+  initPinned() {
+    const gsap = window.gsap, ST = window.ScrollTrigger;
+    const stage = document.querySelector('.reasons-stage');
+    if (!stage) return;
+    const track = stage.querySelector('.reasons-h-track');
+    const cards = [...stage.querySelectorAll('.r-card')];
+    const cardW = cards[0].offsetWidth || stage.offsetWidth;
+    const n = cards.length;           // 5
+    const step = 1 / (n - 1);         // 0.25 per card
+
+    // Card 0 texts start visible; all others start hidden+offset
+    cards.forEach((card, i) => {
+      const els = card.querySelectorAll('.eyebrow, h3, p, .pill-btn');
+      gsap.set(els, i === 0 ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 });
+    });
+
+    gsap.set(track, { x: 0 });
+    const tl = gsap.timeline();
+
+    // Slide track
+    tl.to(track, { x: -(cardW * (n - 1)), duration: 1, ease: 'none' }, 0);
+
+    // Per-card text fade-in (starts just as the card centres on screen)
+    cards.forEach((card, i) => {
+      if (i === 0) return;
+      const els = card.querySelectorAll('.eyebrow, h3, p, .pill-btn');
+      const at = step * i - step * 0.62;   // start well before centre
+      const dur = step * 0.42;             // ...so it's fully done as the card centres
+      tl.to(els, { opacity: 1, y: 0, duration: dur, ease: 'power3.out', stagger: 0.045 }, at);
+    });
+
+    ST.create({
+      trigger: stage, start: 'top top', end: '+=4000',
+      pin: true, pinSpacing: true, scrub: 1.2, animation: tl
+    });
+  }
+
+  tryWater() {
+    if (this._wInit || !this.canvasEl || !this.heroEl) return;
+    this._wInit = true;
+    requestAnimationFrame(() => this.setupWater());
+  }
+
+  setupWater() {
+    this.cols = 230;
+    this.damping = 0.978;
+    this.resizeWater();
+    this._wResize = () => this.resizeWater();
+    window.addEventListener('resize', this._wResize);
+    this._idleT = 0;
+    this._waterRAF = requestAnimationFrame(this._waterTick);
+  }
+
+  resizeWater() {
+    const r = this.heroEl.getBoundingClientRect();
+    const aspect = r.height / Math.max(1, r.width);
+    this.W = this.cols;
+    this.H = Math.max(2, Math.round(this.cols * aspect));
+    this.canvasEl.width = this.W;
+    this.canvasEl.height = this.H;
+    const n = this.W * this.H;
+    this.buf1 = new Float32Array(n);
+    this.buf2 = new Float32Array(n);
+    this.ctx = this.canvasEl.getContext('2d');
+    this.img = this.ctx.createImageData(this.W, this.H);
+  }
+
+  disturb(cx, cy, strength) {
+    const W = this.W, H = this.H, b = this.buf1, rad = 3;
+    for (let yy = -rad; yy <= rad; yy++) for (let xx = -rad; xx <= rad; xx++) {
+      const x = cx + xx, y = cy + yy;
+      if (x < 1 || y < 1 || x >= W - 1 || y >= H - 1) continue;
+      const d = Math.sqrt(xx * xx + yy * yy);
+      if (d > rad + 0.5) continue;
+      b[y * W + x] += strength * (1 - d / (rad + 1));
+    }
+  }
+
+  waterStep() {
+    const W = this.W, H = this.H, b1 = this.buf1, b2 = this.buf2, damp = this.damping;
+    for (let y = 1; y < H - 1; y++) {
+      let i = y * W + 1;
+      for (let x = 1; x < W - 1; x++, i++) {
+        b2[i] = ((b1[i - 1] + b1[i + 1] + b1[i - W] + b1[i + W]) * 0.5 - b2[i]) * damp;
+      }
+    }
+    this.buf1 = b2; this.buf2 = b1;
+  }
+
+  waterRender() {
+    const W = this.W, H = this.H, b = this.buf1, d = this.img.data;
+    const cl = (v) => v < 0 ? 0 : (v > 255 ? 255 : v);
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        const i = y * W + x;
+        const xl = x > 0 ? b[i - 1] : b[i];
+        const xr = x < W - 1 ? b[i + 1] : b[i];
+        const yu = y > 0 ? b[i - W] : b[i];
+        const yd = y < H - 1 ? b[i + W] : b[i];
+        let l = ((xl - xr) + (yu - yd)) * 0.42;
+        if (l > 44) l = 44; if (l < -34) l = -34;
+        const p = i * 4;
+        d[p] = cl(12 + l * 0.7);
+        d[p + 1] = cl(106 + l * 1.0);
+        d[p + 2] = cl(110 + l * 1.05);
+        d[p + 3] = 255;
+      }
+    }
+    this.ctx.putImageData(this.img, 0, 0);
+  }
+
+  _waterTick = () => {
+    this._idleT++;
+    if (this._idleT > 30 && Math.random() < 0.03) {
+      this.disturb(2 + Math.floor(Math.random() * (this.W - 4)), 2 + Math.floor(Math.random() * (this.H - 4)), 30);
+    }
+    this._frame = (this._frame || 0) + 1;
+    if (this._frame % 2 === 0) this.waterStep();
+    this.waterRender();
+    this._waterRAF = requestAnimationFrame(this._waterTick);
+  };
+
+  renderVals() {
+    return {
+      showMenuDividers: this.props.menuDividers ?? true,
+      setPanel: this.setPanel,
+      setHero: this.setHero,
+      setCanvas: this.setCanvas,
+      setGalleryOuter: this.setGalleryOuter,
+      setGalleryTrack: this.setGalleryTrack,
+      galleryMouseDown: this.galleryMouseDown
+    };
+  }
+}
+</script>
+</body>
+</html>

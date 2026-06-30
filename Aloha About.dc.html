@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Lancelot&amp;family=Fraunces:opsz,wght@9..144,300;9..144,400&amp;family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: rgb(12,106,110); }
+  .menu-item { position: relative; overflow: hidden; z-index: 0; flex: 1; display: flex; align-items: center; justify-content: center; gap: 9px; height: 100%; color: #efe9dd; text-decoration: none; font-size: 16px; font-weight: 400; letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap; transition: color 0.45s cubic-bezier(0.16,1,0.3,1); }
+  .menu-item::before { content: ""; position: absolute; inset: 0; background: #efe9dd; transform: scaleY(0); transform-origin: center bottom; transition: transform 0.55s cubic-bezier(0.16,1,0.3,1); z-index: -1; }
+  .menu-item:hover::before { transform: scaleY(1); }
+  .menu-item:hover { color: #14110e !important; }
+  .menu-item.active { color: #14110e; }
+  .menu-item.active::before { transform: scaleY(1); }
+  .vline { width: 1px; height: 100%; background: rgba(238,230,217,0.5); flex: none; transform-origin: top center; }
+  .menu-spacer { flex: 1; }
+  .mi-dot { width: 4px; height: 4px; border-radius: 50%; background: #d8c8ac; flex: none; }
+  .reveal-up { opacity: 0; transform: translateY(36px); transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1); }
+  .reveal-up.in { opacity: 1; transform: translateY(0); }
+  .pill-btn { position: relative; overflow: hidden; z-index: 0; display: inline-flex; align-items: center; justify-content: center; padding: 16px 34px; border-radius: 40px; border: 1px solid rgb(12,106,110); color: rgb(12,106,110); text-decoration: none; font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; transition: color 0.45s cubic-bezier(0.16,1,0.3,1); }
+  .pill-btn::before { content: ""; position: absolute; inset: 0; background: rgb(12,106,110); border-radius: 40px; transform: scaleY(0); transform-origin: center bottom; transition: transform 0.55s cubic-bezier(0.16,1,0.3,1); z-index: -1; }
+  .pill-btn:hover::before { transform: scaleY(1); }
+  .pill-btn:hover { color: #f3efe6 !important; }
+  .feat-icon { stroke: rgb(12,106,110); fill: none; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+  .footer-btn { position: relative; overflow: hidden; z-index: 0; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; height: 172px; border: 1px solid rgba(197,190,177,0.5); border-radius: 48px; color: rgb(197,190,177); text-decoration: none; transition: color 0.5s cubic-bezier(0.16,1,0.3,1); }
+  .footer-btn::before { content: ""; position: absolute; inset: 0; background: rgba(197,190,177,0.95); border-radius: 48px; transform: scaleY(0); transform-origin: center bottom; transition: transform 0.55s cubic-bezier(0.16,1,0.3,1); z-index: -1; }
+  .footer-btn:hover::before { transform: scaleY(1); }
+  .footer-btn:hover { color: rgb(12,106,110) !important; }
+  .ig-handle { position: relative; text-transform: uppercase; cursor: pointer; }
+  .ig-handle::after { content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px; background: currentColor; transform: scaleX(0); transform-origin: left center; transition: transform 0.55s cubic-bezier(0.16,1,0.3,1); }
+  .ig-handle:hover::after { transform: scaleX(1); }
+  @keyframes wipe-right { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes grow-down { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  @keyframes drop-in { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes rise-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+  .eyebrow { font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: rgb(12,106,110); opacity: 0.6; display: block; }
+  .mask-line { display: block; overflow: hidden; padding-bottom: 0.04em; }
+  .mask-inner { display: block; opacity: 0; will-change: transform, opacity; }
+  .s-reveal { opacity: 0; will-change: transform, opacity; }
+  .parallax-band { position: relative; width: 100%; overflow: hidden; }
+  .parallax-img { position: absolute; left: 0; top: -14%; width: 100%; height: 128%; object-fit: cover; will-change: transform; }
+  .bnum { font-family: 'Fraunces', serif; font-weight: 300; font-variant-numeric: tabular-nums; }
+  .b-row { transition: background 0.5s cubic-bezier(0.16,1,0.3,1); }
+  .b-row:hover { background: rgba(12,106,110,0.05); }
+  .pill-btn-cream { position: relative; overflow: hidden; z-index: 0; display: inline-flex; align-items: center; justify-content: center; padding: 18px 40px; border-radius: 40px; border: 1px solid rgba(242,238,230,0.7); color: #f2eee6; text-decoration: none; font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; transition: color 0.45s cubic-bezier(0.16,1,0.3,1); }
+  .pill-btn-cream::before { content: ""; position: absolute; inset: 0; background: #f2eee6; border-radius: 40px; transform: scaleY(0); transform-origin: center bottom; transition: transform 0.55s cubic-bezier(0.16,1,0.3,1); z-index: -1; }
+  .pill-btn-cream:hover::before { transform: scaleY(1); }
+  .pill-btn-cream:hover { color: rgb(12,106,110) !important; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+</helmet>
+
+<div style="background: rgb(12,106,110); min-height: 100vh; display: flex; flex-direction: column; align-items: center;">
+
+<section data-screen-label="About Hero" ref="{{ setHero }}" style="position: relative; width: 100%; height: 100vh; min-height: 860px; flex: none; overflow: hidden; background: rgb(12,106,110); font-family: 'Manrope', sans-serif;">
+
+  <!-- Solid teal background + ambient water -->
+  <div style="position: absolute; inset: 0; z-index: 0; background: rgb(12,106,110);"></div>
+  <canvas ref="{{ setCanvas }}" style="position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; display: block;"></canvas>
+
+  <div style="position: absolute; top: 0; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; z-index: 1">
+
+  <!-- ===== TOP MENU BAND ===== -->
+  <div style="position: absolute; z-index: 2; top: 30px; left: 28px; right: calc(50% + 86px); height: 1px; background: rgba(238,230,217,0.42); transform-origin: left center; animation: wipe-right 1.3s cubic-bezier(0.16,1,0.3,1) 0.5s both;"></div>
+  <div style="position: absolute; z-index: 2; top: 84px; left: 28px; right: calc(50% + 86px); height: 1px; background: rgba(238,230,217,0.42); transform-origin: left center; animation: wipe-right 1.3s cubic-bezier(0.16,1,0.3,1) 0.6s both;"></div>
+  <div style="position: absolute; z-index: 2; top: 30px; right: 28px; left: calc(50% + 86px); height: 1px; background: rgba(238,230,217,0.42); transform-origin: left center; animation: wipe-right 1.3s cubic-bezier(0.16,1,0.3,1) 0.55s both;"></div>
+  <div style="position: absolute; z-index: 2; top: 84px; right: 28px; left: calc(50% + 86px); height: 1px; background: rgba(238,230,217,0.42); transform-origin: left center; animation: wipe-right 1.3s cubic-bezier(0.16,1,0.3,1) 0.65s both;"></div>
+
+  <!-- left items -->
+  <div style="position: absolute; z-index: 3; top: 30px; height: 54px; left: 28px; right: calc(50% + 86px); display: flex; animation: drop-in 1s cubic-bezier(0.16,1,0.3,1) 0.9s both;">
+    <a href="Aloha Treatments.dc.html" class="menu-item"><span class="mi-dot"></span><span>Treatments</span></a>
+    <sc-if value="{{ showMenuDividers }}" hint-placeholder-val="{{ true }}"><span class="vline" style="animation: grow-down 0.9s cubic-bezier(0.16,1,0.3,1) 0.7s both;"></span></sc-if>
+    <a href="Aloha About.dc.html" class="menu-item active"><span class="mi-dot"></span><span>About Us</span></a>
+    <sc-if value="{{ showMenuDividers }}" hint-placeholder-val="{{ true }}"><span class="vline" style="animation: grow-down 0.9s cubic-bezier(0.16,1,0.3,1) 0.78s both;"></span></sc-if>
+    <span class="menu-spacer"></span>
+  </div>
+
+  <!-- right items -->
+  <div style="position: absolute; z-index: 3; top: 30px; height: 54px; right: 28px; left: calc(50% + 86px); display: flex; animation: drop-in 1s cubic-bezier(0.16,1,0.3,1) 0.9s both;">
+    <span class="menu-spacer"></span>
+    <sc-if value="{{ showMenuDividers }}" hint-placeholder-val="{{ true }}"><span class="vline" style="animation: grow-down 0.9s cubic-bezier(0.16,1,0.3,1) 0.78s both;"></span></sc-if>
+    <a href="Aloha Landing.dc.html#hotels" class="menu-item"><span class="mi-dot"></span><span>For Hotels</span></a>
+    <sc-if value="{{ showMenuDividers }}" hint-placeholder-val="{{ true }}"><span class="vline" style="animation: grow-down 0.9s cubic-bezier(0.16,1,0.3,1) 0.7s both;"></span></sc-if>
+    <a href="Aloha Contacts.dc.html" class="menu-item"><span class="mi-dot"></span><span>Contact Us</span></a>
+  </div>
+
+  <!-- centered logo -->
+  <a href="Aloha Landing.dc.html"><img src="assets/logo.png" alt="Aloha Massage Poolside Wellness" style="position: absolute; z-index: 4; top: 12px; left: 50%; transform: translateX(-50%); height: 146px; width: auto; filter: brightness(1.32) saturate(0.62); animation: fade-in 1.3s ease-out 0.3s both;"></a>
+
+  <!-- ===== CENTERED TITLE ===== -->
+  <div style="position: absolute; z-index: 3; top: 50%; transform: translateY(-50%); left: 28px; right: 28px; display: flex; flex-direction: column; align-items: center; text-align: center;">
+    <span style="font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 400; text-transform: uppercase; letter-spacing: 0.2em; color: rgba(236,226,206,0.9); animation: rise-in 1.1s cubic-bezier(0.16,1,0.3,1) 0.9s both;">ABOUT US</span>
+    <h1 style="margin: 16px 0 0; font-family: 'Fraunces', serif; font-weight: 300; font-size: 92px; line-height: 1; letter-spacing: 0.04em; color: rgba(236,226,206,0.95); animation: rise-in 1.3s cubic-bezier(0.16,1,0.3,1) 1.1s both;">OUR STORY</h1>
+    <p style="margin: 28px 0 0; max-width: 620px; font-family: 'Manrope', sans-serif; font-size: 17px; line-height: 1.65; letter-spacing: 0.01em; color: #f2eee6; opacity: 0.92; animation: rise-in 1.2s cubic-bezier(0.16,1,0.3,1) 1.5s both;">More than a massage &mdash; a way to bring island calm to your holiday, right where the water meets the sun.</p>
+  </div>
+
+  </div>
+</section>
+
+<!-- ===== ABOUT PANEL ===== -->
+<section data-screen-label="About" ref="{{ setPanel }}" style="position: relative; z-index: 2; flex: none; width: 100%; margin-top: -24px; background: rgb(217,217,217); border-top-left-radius: 50% 130px; border-top-right-radius: 50% 130px; overflow: hidden; font-family: 'Manrope', sans-serif; padding: 232px 0 268px;">
+
+  <!-- ===== ACT I — MANIFESTO / WHO WE ARE ===== -->
+  <div style="width: 1344px; max-width: calc(100% - 120px); margin: 0 auto; max-width: 880px; text-align: center;">
+    <span class="eyebrow s-reveal">Who we are</span>
+    <h2 data-mask style="margin: 26px 0 0; font-family: 'Fraunces', serif; font-weight: 300; font-style: italic; font-size: clamp(46px, 5.2vw, 74px); line-height: 1.08; letter-spacing: 0.02em; color: rgb(12,106,110);"><span class="mask-line"><span class="mask-inner">Born from island light,</span></span><span class="mask-line"><span class="mask-inner">and the quiet of water.</span></span></h2>
+    <p class="s-reveal" data-delay="0.15" style="margin: 36px auto 0; max-width: 720px; font-family: 'Manrope', sans-serif; font-size: 19px; line-height: 1.72; color: rgb(12,106,110); opacity: 0.82;">Aloha Massage is a premium poolside wellness concept &mdash; inspired by island living, deep relaxation and the grace of true hospitality. We exist for one moment in particular: the breath a guest lets go when they finally decide the holiday has truly begun.</p>
+  </div>
+
+  <!-- (manifesto is the only content of the curved panel now) -->
+</section>
+
+<!-- ===== STORY SLIDER — pinned 3-card chapters ===== -->
+<section data-screen-label="Story" class="story-stage" style="width: 100%; height: 100vh; min-height: 720px; flex: none; position: relative; overflow: hidden; background: rgb(217,217,217); font-family: 'Manrope', sans-serif;">
+
+  <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;">
+    <div style="width: 1344px; max-width: calc(100% - 130px); display: grid; grid-template-columns: 1fr 1.06fr; gap: 96px; align-items: center;">
+
+      <!-- LEFT: image stack (crossfade only) -->
+      <div style="position: relative; height: clamp(360px, 62vh, 620px); border-radius: clamp(160px, 26vh, 280px) clamp(160px, 26vh, 280px) 14px 14px; overflow: hidden; box-shadow: 0 30px 66px rgba(0,0,0,0.26);">
+        <img class="story-img" data-img="0" src="assets/hero-massage.png" alt="Professional poolside massage" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 1;">
+        <img class="story-img" data-img="1" src="assets/card-natural.jpg" alt="Natural oils and refined tropical setup" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0;">
+        <img class="story-img" data-img="2" src="assets/card-island.jpg" alt="Lush island calm" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0;">
+      </div>
+
+      <!-- RIGHT: text window — track scrolls (one exits top, next enters bottom) -->
+      <div style="position: relative; height: clamp(360px, 62vh, 620px); overflow: hidden;">
+        <div class="story-text-track" style="position: absolute; left: 0; right: 0; top: 0;">
+
+          <div class="story-text" style="height: clamp(360px, 62vh, 620px); display: flex; flex-direction: column; justify-content: center;">
+            <span class="eyebrow">01 &mdash; The concept</span>
+            <h3 style="margin: 24px 0 0; font-family: 'Fraunces', serif; font-weight: 300; font-size: clamp(40px, 4.2vw, 64px); line-height: 1.06; letter-spacing: 0.02em; color: rgb(12,106,110);">A poolside,<br>reimagined.</h3>
+            <p style="margin: 34px 0 0; max-width: 520px; font-size: 19px; line-height: 1.78; color: rgb(12,106,110); opacity: 0.82;">Aloha Massage is a premium poolside wellness concept, inspired by island living and the grace of true hospitality &mdash; turning an ordinary stretch of poolside into an elegant wellness corner made for slowing down.</p>
+          </div>
+
+          <div class="story-text" style="height: clamp(360px, 62vh, 620px); display: flex; flex-direction: column; justify-content: center;">
+            <span class="eyebrow">02 &mdash; The ritual</span>
+            <h3 style="margin: 24px 0 0; font-family: 'Fraunces', serif; font-weight: 300; font-size: clamp(40px, 4.2vw, 64px); line-height: 1.06; letter-spacing: 0.02em; color: rgb(12,106,110);">Calm, comfort,<br>escape.</h3>
+            <p style="margin: 34px 0 0; max-width: 520px; font-size: 19px; line-height: 1.78; color: rgb(12,106,110); opacity: 0.82;">Through professional massage and a refined tropical setup, we create an atmosphere of pure calm and comfort &mdash; the quiet escape that every great holiday is quietly remembered for.</p>
+          </div>
+
+          <div class="story-text" style="height: clamp(360px, 62vh, 620px); display: flex; flex-direction: column; justify-content: center;">
+            <span class="eyebrow">03 &mdash; Our mission</span>
+            <h3 style="margin: 24px 0 0; font-family: 'Fraunces', serif; font-weight: 300; font-size: clamp(40px, 4.2vw, 64px); line-height: 1.06; letter-spacing: 0.02em; color: rgb(12,106,110);">Wellness,<br>brought to you.</h3>
+            <p style="margin: 34px 0 0; max-width: 520px; font-size: 19px; line-height: 1.78; color: rgb(12,106,110); opacity: 0.82;">Instead of asking you to go to the spa, we bring the experience to where you already feel most relaxed &mdash; beside the pool, under the sun. The treatment comes to the lounger; all you have to do is stay.</p>
+            <a href="Aloha Treatments.dc.html" class="pill-btn" style="margin-top: 40px; align-self: flex-start;">EXPLORE TREATMENTS</a>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</section>
+
+<!-- ===== HOTELS — full-bleed pinned image with revealed text ===== -->
+<section data-screen-label="Hotels" class="hotels-stage" style="width: 100%; height: 100vh; min-height: 720px; flex: none; position: relative; overflow: hidden; background: rgb(12,106,110); font-family: 'Manrope', sans-serif;">
+  <img class="hotels-img" src="assets/card-hotels.jpg" alt="Poolside loungers at a resort" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;">
+  <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,52,54,0.12) 0%, rgba(8,52,54,0.34) 52%, rgba(8,52,54,0.7) 100%);"></div>
+
+  <!-- bottom-left text — aligned to same left edge as Designed-to container -->
+  <div style="position: absolute; left: calc(50% - 672px); bottom: 80px; max-width: 660px;">
+    <span class="eyebrow ht-reveal" style="color: #f2eee6; opacity: 0.85;">For hotels</span>
+    <h3 class="ht-reveal" style="margin: 20px 0 0; font-family: 'Fraunces', serif; font-weight: 300; font-size: clamp(38px, 4vw, 58px); line-height: 1.08; letter-spacing: 0.02em; color: #f2eee6;">A signature your<br>guests remember.</h3>
+    <p class="ht-reveal" style="margin: 26px 0 0; max-width: 560px; font-size: 18px; line-height: 1.74; color: rgba(242,238,230,0.92);">Bring the Aloha experience to your guests &mdash; a refined wellness signature that asks almost nothing of your team, and gives your resort something they will remember.</p>
+  </div>
+
+  <!-- bottom-right button -->
+  <a href="Aloha Landing.dc.html#hotels" class="ht-btn pill-btn-cream" style="position: absolute; right: calc(50% - 672px); bottom: 92px;">FOR HOTELS</a>
+</section>
+
+<!-- ===== DESIGNED TO — benefits list ===== -->
+<section data-screen-label="Designed" style="width: 100%; flex: none; background: rgb(217,217,217); font-family: 'Manrope', sans-serif; padding: 150px 0 172px;">
+  <div style="width: 1344px; max-width: calc(100% - 120px); margin: 0 auto;">
+    <div style="max-width: 760px;">
+      <span class="eyebrow s-reveal">Designed to</span>
+      <h3 data-mask style="margin: 22px 0 0; font-family: 'Fraunces', serif; font-weight: 300; font-size: clamp(34px, 3.6vw, 52px); line-height: 1.1; letter-spacing: 0.02em; color: rgb(12,106,110);"><span class="mask-line"><span class="mask-inner">A quiet luxury, felt</span></span><span class="mask-line"><span class="mask-inner">across the whole resort.</span></span></h3>
+    </div>
+
+    <div style="margin-top: 56px; border-top: 1px solid rgba(12,106,110,0.24);">
+      <div class="b-row s-reveal" style="display: flex; align-items: baseline; gap: 44px; padding: 30px 22px; border-bottom: 1px solid rgba(12,106,110,0.24);"><span class="bnum" style="font-size: 26px; color: rgb(12,106,110); opacity: 0.5; min-width: 52px;">01</span><span style="font-family: 'Fraunces', serif; font-weight: 300; font-size: clamp(24px, 2.4vw, 34px); line-height: 1.2; color: rgb(12,106,110);">Deepen guest satisfaction at every stay</span></div>
+      <div class="b-row s-reveal" style="display: flex; align-items: baseline; gap: 44px; padding: 30px 22px; border-bottom: 1px solid rgba(12,106,110,0.24);"><span class="bnum" style="font-size: 26px; color: rgb(12,106,110); opacity: 0.5; min-width: 52px;">02</span><span style="font-family: 'Fraunces', serif; font-weight: 300; font-size: clamp(24px, 2.4vw, 34px); line-height: 1.2; color: rgb(12,106,110);">Elevate the perceived value of the hotel</span></div>
+      <div class="b-row s-reveal" style="display: flex; align-items: baseline; gap: 44px; padding: 30px 22px; border-bottom: 1px solid rgba(12,106,110,0.24);"><span class="bnum" style="font-size: 26px; color: rgb(12,106,110); opacity: 0.5; min-width: 52px;">03</span><span style="font-family: 'Fraunces', serif; font-weight: 300; font-size: clamp(24px, 2.4vw, 34px); line-height: 1.2; color: rgb(12,106,110);">Turn an ordinary stay into a lasting memory</span></div>
+      <div class="b-row s-reveal" style="display: flex; align-items: baseline; gap: 44px; padding: 30px 22px; border-bottom: 1px solid rgba(12,106,110,0.24);"><span class="bnum" style="font-size: 26px; color: rgb(12,106,110); opacity: 0.5; min-width: 52px;">04</span><span style="font-family: 'Fraunces', serif; font-weight: 300; font-size: clamp(24px, 2.4vw, 34px); line-height: 1.2; color: rgb(12,106,110);">Add a true wellness signature to the resort</span></div>
+      <div class="b-row s-reveal" style="display: flex; align-items: baseline; gap: 44px; padding: 30px 22px; border-bottom: 1px solid rgba(12,106,110,0.24);"><span class="bnum" style="font-size: 26px; color: rgb(12,106,110); opacity: 0.5; min-width: 52px;">05</span><span style="font-family: 'Fraunces', serif; font-weight: 300; font-size: clamp(24px, 2.4vw, 34px); line-height: 1.2; color: rgb(12,106,110);">Deliver a premium service with minimal operational lift</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<section data-screen-label="Footer" style="width: 100%; flex: none; background: rgb(12,106,110); color: rgb(197,190,177); font-family: 'Manrope', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 92px 0 46px; box-sizing: border-box;">
+  <div style="width: 1360px; max-width: calc(100% - 120px);">
+
+    <div class="reveal-up" style="display: flex; justify-content: center;">
+      <a href="Aloha Landing.dc.html"><img src="assets/logo.png" alt="Aloha Massage Poolside Wellness" style="height: 150px; width: auto; filter: brightness(1.45) saturate(0.55);"></a>
+    </div>
+
+    <div class="reveal-up" style="transition-delay: 0.1s; display: flex; gap: 40px; margin-top: 48px;">
+      <a href="#whatsapp" class="footer-btn">
+        <span style="font-family: 'Fraunces', serif; font-weight: 300; font-size: 64px; letter-spacing: 0.06em; line-height: 1;">WHATSAPP</span>
+        <span style="font-size: 16px; opacity: 0.8;">We&rsquo;re available every day</span>
+      </a>
+      <a href="#call" class="footer-btn">
+        <span style="font-family: 'Fraunces', serif; font-weight: 300; font-size: 64px; letter-spacing: 0.06em; line-height: 1;">CALL US</span>
+        <span style="font-size: 16px; opacity: 0.8;">We&rsquo;re available from 10am &ndash; 8pm</span>
+      </a>
+    </div>
+
+    <div class="reveal-up" style="transition-delay: 0.16s; margin-top: 64px; border-top: 1px solid rgba(197,190,177,0.4); display: flex; justify-content: space-between; padding: 24px 2px 0; font-size: 16px; letter-spacing: -0.02em;">
+      <span>MONDAY TO SUNDAY 10AM&ndash;8PM</span>
+      <span>TEL: 0376000000</span>
+      <span>TAZIO NUVOLARI STREET</span>
+    </div>
+
+    <div class="reveal-up" style="transition-delay: 0.1s; margin-top: 84px; display: flex; flex-direction: column; align-items: center;">
+      <p style="margin: 0; font-size: 16px; opacity: 0.85;">What&rsquo;s happening behind the scenes at Aloha</p>
+      <div style="display: flex; align-items: center; justify-content: center; gap: 22px; margin-top: 20px;">
+        <svg viewBox="0 0 48 48" style="width: 44px; height: 44px; flex: none; fill: none; stroke: rgb(197,190,177); stroke-width: 2.4;"><rect x="6" y="6" width="36" height="36" rx="11"></rect><circle cx="24" cy="24" r="9"></circle><circle cx="35" cy="13" r="2" fill="rgb(197,190,177)" stroke="none"></circle></svg>
+        <span class="ig-handle" style="font-family: 'Fraunces', serif; font-weight: 300; font-size: 54px; letter-spacing: 0.04em; line-height: 1;">alohamassage_poolsodewellness</span>
+      </div>
+    </div>
+
+    <p style="margin: 72px 0 0; text-align: center; font-size: 13px; letter-spacing: 0.06em; opacity: 0.65;">ALOHA MASSAGE POOLSIDE WELLNESS | ALL RIGHTS RESERVED 2026</p>
+
+  </div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;menuDividers&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;}}">
+class Component extends DCLogic {
+  setPanel = (el) => { this.panelEl = el; };
+  setHero = (el) => { this.heroEl = el; this.tryWater(); };
+  setCanvas = (el) => { this.canvasEl = el; this.tryWater(); };
+
+  tryWater() {
+    if (this._wInit || !this.canvasEl || !this.heroEl) return;
+    this._wInit = true;
+    requestAnimationFrame(() => this.setupWater());
+  }
+
+  componentDidMount() {
+    this._raf = null;
+    this._onScroll = () => {
+      if (this._raf) return;
+      this._raf = requestAnimationFrame(() => { this._raf = null; this.updateCurve(); });
+    };
+    window.addEventListener('scroll', this._onScroll, { passive: true });
+    this._onResize = () => this.updateCurve();
+    window.addEventListener('resize', this._onResize);
+    this.updateCurve();
+    this.tryWater();
+    this.initStory();
+  }
+
+  initStory() {
+    if (this._storyInit) return;
+    let tries = 0;
+    const go = () => {
+      if (this._storyInit) return;
+      this._storyInit = true;
+      this.runStory();
+    };
+    const wait = () => {
+      if (window.gsap && window.ScrollTrigger) {
+        // Defer until layout + images have settled so ScrollTrigger measures correctly
+        if (document.readyState === 'complete') { requestAnimationFrame(go); }
+        else { window.addEventListener('load', () => requestAnimationFrame(go), { once: true }); setTimeout(go, 2600); }
+        return;
+      }
+      if (tries++ > 240) { this.revealFallback(); return; }
+      requestAnimationFrame(wait);
+    };
+    wait();
+  }
+
+  revealFallback() {
+    document.querySelectorAll('.s-reveal').forEach((e) => { e.style.opacity = 1; e.style.transform = 'none'; });
+    document.querySelectorAll('.mask-inner').forEach((e) => { e.style.transform = 'none'; });
+  }
+
+  runStory() {
+    const gsap = window.gsap, ST = window.ScrollTrigger;
+    gsap.registerPlugin(ST);
+
+    // Masked headline lines rise into view
+    document.querySelectorAll('[data-mask]').forEach((grp) => {
+      const inners = grp.querySelectorAll('.mask-inner');
+      gsap.fromTo(inners, { yPercent: 110, opacity: 0 }, {
+        yPercent: 0, opacity: 1, duration: 1.15, ease: 'power4.out', stagger: 0.11,
+        scrollTrigger: { trigger: grp, start: 'top 86%', once: true }
+      });
+    });
+
+    // Fade + rise reveals (paragraphs, eyebrows, list rows, buttons)
+    gsap.utils.toArray('.s-reveal').forEach((el) => {
+      gsap.fromTo(el, { y: 52, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 1.1, ease: 'power3.out',
+        delay: parseFloat(el.dataset.delay || 0),
+        scrollTrigger: { trigger: el, start: 'top 90%', once: true }
+      });
+    });
+
+    // Parallax drift on every image band
+    gsap.utils.toArray('.parallax-img').forEach((img) => {
+      const band = img.closest('.parallax-band') || img;
+      gsap.fromTo(img, { yPercent: -9 }, {
+        yPercent: 9, ease: 'none',
+        scrollTrigger: { trigger: band, start: 'top bottom', end: 'bottom top', scrub: true }
+      });
+    });
+
+    this.initPinned();
+
+    const refresh = () => ST.refresh();
+    window.addEventListener('load', refresh);
+    document.querySelectorAll('img').forEach((im) => { if (!im.complete) im.addEventListener('load', refresh); });
+    setTimeout(refresh, 700);
+  }
+
+  initPinned() {
+    const gsap = window.gsap, ST = window.ScrollTrigger;
+
+    // --- Pinned 3-card story slider ---
+    const stage = document.querySelector('.story-stage');
+    if (stage) {
+      const imgs = [...stage.querySelectorAll('.story-img')];
+      const track = stage.querySelector('.story-text-track');
+      gsap.set(imgs[0], { opacity: 1 });
+      gsap.set(imgs.slice(1), { opacity: 0 });
+
+      // Text track scrolls continuously (one block exits top as next enters bottom);
+      // images only cross-fade at the hand-off points.
+      const tl = gsap.timeline();
+      tl.fromTo(track, { yPercent: 0 }, { yPercent: -66.667, duration: 1, ease: 'none' }, 0)
+        .to(imgs[0], { opacity: 0, duration: 0.2, ease: 'power1.inOut' }, 0.15)
+        .to(imgs[1], { opacity: 1, duration: 0.2, ease: 'power1.inOut' }, 0.15)
+        .to(imgs[1], { opacity: 0, duration: 0.2, ease: 'power1.inOut' }, 0.65)
+        .to(imgs[2], { opacity: 1, duration: 0.2, ease: 'power1.inOut' }, 0.65);
+
+      ST.create({
+        trigger: stage, start: 'top top', end: '+=3000',
+        pin: true, pinSpacing: true, scrub: 1, animation: tl
+      });
+    }
+
+    // --- Pinned full-bleed hotels image (smooth parallax) ---
+    const hstage = document.querySelector('.hotels-stage');
+    if (hstage) {
+      const lines = hstage.querySelectorAll('.ht-reveal');
+      const btn = hstage.querySelector('.ht-btn');
+      const img = hstage.querySelector('.hotels-img');
+      gsap.set(lines, { opacity: 0, y: 52 });
+      gsap.set(btn, { opacity: 0, y: 52 });
+      gsap.set(img, { scale: 1 });
+
+      const tl2 = gsap.timeline();
+      tl2.to({}, { duration: 1 }, 0)  // hold while image stays still
+         .to(lines, { opacity: 1, y: 0, duration: 0.9, stagger: 0.16, ease: 'power3.out' }, 1.0)
+         .to(btn, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, 1.45);
+
+      ST.create({
+        trigger: hstage, start: 'top top', end: '+=1900',
+        pin: true, pinSpacing: true, scrub: 1.6, animation: tl2
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this._onScroll);
+    window.removeEventListener('resize', this._onResize);
+    if (window.ScrollTrigger) window.ScrollTrigger.getAll().forEach((t) => t.kill());
+    if (this._waterRAF) cancelAnimationFrame(this._waterRAF);
+    if (this._wResize) window.removeEventListener('resize', this._wResize);
+  }
+
+  checkReveals() {
+    const vh = window.innerHeight || 800;
+    document.querySelectorAll('.reveal-up:not(.in)').forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.top < vh * 0.86 && r.bottom > 0) el.classList.add('in');
+    });
+  }
+
+  updateCurve() {
+    this.checkReveals();
+    const el = this.panelEl;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const vh = window.innerHeight || 800;
+    let p = 1 - (rect.top / vh);
+    p = Math.max(0, Math.min(1, p));
+    const H = 165 - p * 110;
+    el.style.borderTopLeftRadius = '50% ' + H + 'px';
+    el.style.borderTopRightRadius = '50% ' + H + 'px';
+  }
+
+  // ===== ambient water ripple field =====
+  setupWater() {
+    this.cols = 230;
+    this.damping = 0.978;
+    this.resizeWater();
+    this._wResize = () => this.resizeWater();
+    window.addEventListener('resize', this._wResize);
+    this._idleT = 0;
+    this._waterRAF = requestAnimationFrame(this._waterTick);
+  }
+
+  resizeWater() {
+    const r = this.heroEl.getBoundingClientRect();
+    const aspect = r.height / Math.max(1, r.width);
+    this.W = this.cols;
+    this.H = Math.max(2, Math.round(this.cols * aspect));
+    this.canvasEl.width = this.W;
+    this.canvasEl.height = this.H;
+    const n = this.W * this.H;
+    this.buf1 = new Float32Array(n);
+    this.buf2 = new Float32Array(n);
+    this.ctx = this.canvasEl.getContext('2d');
+    this.img = this.ctx.createImageData(this.W, this.H);
+  }
+
+  disturb(cx, cy, strength) {
+    const W = this.W, H = this.H, b = this.buf1, rad = 3;
+    for (let yy = -rad; yy <= rad; yy++) for (let xx = -rad; xx <= rad; xx++) {
+      const x = cx + xx, y = cy + yy;
+      if (x < 1 || y < 1 || x >= W - 1 || y >= H - 1) continue;
+      const d = Math.sqrt(xx * xx + yy * yy);
+      if (d > rad + 0.5) continue;
+      b[y * W + x] += strength * (1 - d / (rad + 1));
+    }
+  }
+
+  waterStep() {
+    const W = this.W, H = this.H, b1 = this.buf1, b2 = this.buf2, damp = this.damping;
+    for (let y = 1; y < H - 1; y++) {
+      let i = y * W + 1;
+      for (let x = 1; x < W - 1; x++, i++) {
+        b2[i] = ((b1[i - 1] + b1[i + 1] + b1[i - W] + b1[i + W]) * 0.5 - b2[i]) * damp;
+      }
+    }
+    this.buf1 = b2; this.buf2 = b1;
+  }
+
+  waterRender() {
+    const W = this.W, H = this.H, b = this.buf1, d = this.img.data;
+    const cl = (v) => v < 0 ? 0 : (v > 255 ? 255 : v);
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        const i = y * W + x;
+        const xl = x > 0 ? b[i - 1] : b[i];
+        const xr = x < W - 1 ? b[i + 1] : b[i];
+        const yu = y > 0 ? b[i - W] : b[i];
+        const yd = y < H - 1 ? b[i + W] : b[i];
+        let l = ((xl - xr) + (yu - yd)) * 0.42;
+        if (l > 44) l = 44; if (l < -34) l = -34;
+        const p = i * 4;
+        d[p] = cl(12 + l * 0.7);
+        d[p + 1] = cl(106 + l * 1.0);
+        d[p + 2] = cl(110 + l * 1.05);
+        d[p + 3] = 255;
+      }
+    }
+    this.ctx.putImageData(this.img, 0, 0);
+  }
+
+  _waterTick = () => {
+    this._idleT++;
+    if (this._idleT > 30 && Math.random() < 0.03) {
+      this.disturb(2 + Math.floor(Math.random() * (this.W - 4)), 2 + Math.floor(Math.random() * (this.H - 4)), 30);
+    }
+    this._frame = (this._frame || 0) + 1;
+    if (this._frame % 2 === 0) this.waterStep();
+    this.waterRender();
+    this._waterRAF = requestAnimationFrame(this._waterTick);
+  };
+
+  renderVals() {
+    return {
+      showMenuDividers: this.props.menuDividers ?? true,
+      setPanel: this.setPanel,
+      setHero: this.setHero,
+      setCanvas: this.setCanvas
+    };
+  }
+}
+</script>
+</body>
+</html>
