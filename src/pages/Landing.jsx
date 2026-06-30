@@ -1,7 +1,8 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Nav from '../components/Nav.jsx'
 import Footer from '../components/Footer.jsx'
+import Preloader from '../components/Preloader.jsx'
 import { useCurvedPanel } from '../hooks/useCurvedPanel.js'
 import { useIsTouch } from '../hooks/useMediaQuery.js'
 
@@ -26,8 +27,20 @@ function getTextWidth(el) {
   return r.getBoundingClientRect().width
 }
 
+// Plays once per full page load; internal SPA navigation back to home skips it.
+let preloaderPlayed = false
+
 export default function Landing() {
   const isTouch = useIsTouch()
+
+  const [started, setStarted] = useState(preloaderPlayed)
+  const [showPreloader, setShowPreloader] = useState(!preloaderPlayed)
+
+  const handlePreloaderDone = () => {
+    preloaderPlayed = true
+    setShowPreloader(false)
+    setStarted(true)
+  }
 
   const alohaRef   = useRef(null)
   const luxuryRef  = useRef(null)
@@ -134,6 +147,7 @@ export default function Landing() {
 
   // ─── Aloha wordmark ──────────────────────────────────────────────────────
   useEffect(() => {
+    if (!started) return            // hero intro waits for the preloader
     const el = alohaRef.current
     if (!el) return
 
@@ -219,10 +233,12 @@ export default function Landing() {
     window.addEventListener('resize', onResize)
     setupLotus()
     return () => window.removeEventListener('resize', onResize)
-  }, [])
+  }, [isTouch, started])
 
   return (
     <div style={{background:'rgb(12,106,110)',minHeight:'100vh',display:'flex',flexDirection:'column',alignItems:'center'}}>
+
+      {showPreloader && <Preloader onComplete={handlePreloaderDone} />}
 
       {/* ===== HERO ===== */}
       {isTouch ? (
@@ -232,14 +248,18 @@ export default function Landing() {
             <video src="/assets/home-2.mp4" autoPlay muted loop playsInline preload="auto"/>
             <div className="lh-grad-m"/>
           </div>
-          <Nav active="home" />
-          <div className="lh-mobile">
-            <h1 ref={alohaRef} className="lh-aloha-m">Aloha</h1>
-            <p ref={luxuryRef} className="lh-lux-m">Luxury massage experiences beside the pool</p>
-            <div className="lh-rule-m"/>
-            <p ref={taglineRef} className="lh-tag-m">Relax. Reconnect. Recharge.</p>
-            <Link to="/treatments" className="book-btn lh-book-m">BOOK YOUR EXPERIENCE</Link>
-          </div>
+          {started && (
+            <>
+              <Nav active="home" />
+              <div className="lh-mobile">
+                <h1 ref={alohaRef} className="lh-aloha-m">Aloha</h1>
+                <p ref={luxuryRef} className="lh-lux-m">Luxury massage experiences beside the pool</p>
+                <div className="lh-rule-m"/>
+                <p ref={taglineRef} className="lh-tag-m">Relax. Reconnect. Recharge.</p>
+                <Link to="/treatments" className="book-btn lh-book-m">BOOK YOUR EXPERIENCE</Link>
+              </div>
+            </>
+          )}
         </section>
       ) : (
         /* ---------- DESKTOP HERO ---------- */
@@ -259,6 +279,7 @@ export default function Landing() {
             <div style={{position:'absolute',inset:0,background:'linear-gradient(180deg, rgba(20,17,14,0.34) 0%, rgba(20,17,14,0.05) 26%, rgba(20,17,14,0.06) 60%, rgba(20,17,14,0.34) 100%)'}}/>
           </div>
 
+          {started && (
           <div style={{position:'absolute',top:0,bottom:0,left:'50%',transform:'translateX(-50%)',width:'100%',zIndex:1}}>
             <Nav active="home" />
 
@@ -318,6 +339,7 @@ export default function Landing() {
               BOOK YOUR EXPERIENCE
             </Link>
           </div>
+          )}
         </section>
       )}
 

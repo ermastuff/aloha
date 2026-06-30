@@ -34,6 +34,72 @@ html, body {
   to   { transform: scale(1.12); }
 }
 
+/* ===== HOME PRELOADER ===== */
+.pl-lock { overflow: hidden !important; }
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #EFE9DD;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.pl-logo {
+  position: relative;
+  z-index: 1;                 /* sits beneath the rising video, gets covered */
+  display: inline-block;
+}
+/* Invisible image just establishes the logo's box (size + aspect) */
+.pl-logo-sizer {
+  height: clamp(120px, 22vw, 196px);
+  width: auto;
+  display: block;
+  visibility: hidden;
+}
+/* Both layers paint a colour into the logo silhouette via mask */
+.pl-logo-ghost,
+.pl-logo-fill {
+  position: absolute;
+  inset: 0;
+  -webkit-mask: url(/assets/logo.png) center / contain no-repeat;
+          mask: url(/assets/logo.png) center / contain no-repeat;
+}
+.pl-logo-ghost { background: rgba(74, 53, 38, 0.16); }   /* faint empty logo */
+.pl-logo-fill {
+  background: #4A3526;                                    /* brown fill */
+  clip-path: inset(0 0 100% 0);                          /* revealed top → bottom */
+  will-change: clip-path;
+}
+.pl-dome {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 0;                  /* grows from zero — cream + logo show first */
+  overflow: hidden;
+  z-index: 2;                 /* rises over the logo */
+  will-change: height, border-radius;
+}
+.pl-dome video {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100vh;
+  object-fit: cover;
+  object-position: center 42%;
+}
+.pl-dome-grad {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(180deg, rgba(20,17,14,0.30) 0%, rgba(20,17,14,0.05) 30%, rgba(20,17,14,0.10) 70%, rgba(20,17,14,0.32) 100%);
+}
+
 /* ===== NAVIGATION ===== */
 .menu-item {
   position: relative;
