@@ -8,6 +8,9 @@ import About from './pages/About.jsx'
 import Treatments from './pages/Treatments.jsx'
 import Hotels from './pages/Hotels.jsx'
 import Contact from './pages/Contact.jsx'
+import PageTransition from './components/PageTransition.jsx'
+import FloatingMenu from './components/FloatingMenu.jsx'
+import { navState } from './lib/navState.js'
 
 export default function App() {
   const lenisRef = useRef(null)
@@ -37,8 +40,13 @@ export default function App() {
     }
   }, [])
 
-  // ── Reset to top on route change ──
+  // ── Reset to top on route change (also flags that we've navigated, so the
+  //    home preloader only ever plays on the very first load) ──
+  const firstRoute = useRef(true)
   useEffect(() => {
+    if (firstRoute.current) firstRoute.current = false
+    else navState.hasNavigated = true
+
     const lenis = lenisRef.current
     if (lenis) lenis.scrollTo(0, { immediate: true })
     else window.scrollTo(0, 0)
@@ -46,12 +54,17 @@ export default function App() {
   }, [pathname])
 
   return (
-    <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/treatments" element={<Treatments />} />
-      <Route path="/hotels" element={<Hotels />} />
-      <Route path="/contact" element={<Contact />} />
-    </Routes>
+    <>
+      <PageTransition>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/treatments" element={<Treatments />} />
+          <Route path="/hotels" element={<Hotels />} />
+          <Route path="/contact" element={<Contact />} />
+        </Routes>
+      </PageTransition>
+      <FloatingMenu />
+    </>
   )
 }

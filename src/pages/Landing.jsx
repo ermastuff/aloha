@@ -5,6 +5,7 @@ import Footer from '../components/Footer.jsx'
 import Preloader from '../components/Preloader.jsx'
 import { useCurvedPanel } from '../hooks/useCurvedPanel.js'
 import { useIsTouch } from '../hooks/useMediaQuery.js'
+import { navState } from '../lib/navState.js'
 
 const EASE = 'cubic-bezier(0.16,1,0.3,1)'
 
@@ -27,17 +28,31 @@ function getTextWidth(el) {
   return r.getBoundingClientRect().width
 }
 
-// Plays once per full page load; internal SPA navigation back to home skips it.
-let preloaderPlayed = false
+// The preloader is an intro: it plays only the first time the home is loaded in
+// a session. Reloads within the same session and SPA navigation back to home
+// both skip it (see navState + sessionStorage below).
+const INTRO_KEY = 'aloha_intro_played'
+const introPlayed = () => {
+  try { return sessionStorage.getItem(INTRO_KEY) === '1' } catch { return false }
+}
+const markIntroPlayed = () => {
+  try { sessionStorage.setItem(INTRO_KEY, '1') } catch (_) {}
+}
 
 export default function Landing() {
   const isTouch = useIsTouch()
 
-  const [started, setStarted] = useState(preloaderPlayed)
-  const [showPreloader, setShowPreloader] = useState(!preloaderPlayed)
+  // Skip the intro if it already played this session, or if the user reached
+  // home by navigating (i.e. this isn't the very first page load).
+  const skipIntro = introPlayed() || navState.hasNavigated
+  const [started, setStarted] = useState(skipIntro)
+  const [showPreloader, setShowPreloader] = useState(!skipIntro)
+
+  // Once home has been seen, never show the intro again this session.
+  useEffect(() => { markIntroPlayed() }, [])
 
   const handlePreloaderDone = () => {
-    preloaderPlayed = true
+    markIntroPlayed()
     setShowPreloader(false)
     setStarted(true)
   }

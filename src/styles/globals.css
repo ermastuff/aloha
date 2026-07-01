@@ -113,6 +113,184 @@ html, body {
   }
 }
 
+/* ===== PAGE FADE TRANSITION ===== */
+/* .page-fade wraps the routed pages; its opacity is animated by PageTransition. */
+
+/* ===== FLOATING MENU ===== */
+.fmenu {
+  position: fixed;
+  right: 24px;
+  top: 50%;
+  z-index: 60;
+  display: flex;
+  align-items: flex-end;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(48px, -50%);
+  transition: opacity 0.5s ease, transform 0.65s cubic-bezier(0.16,1,0.3,1);
+}
+.fmenu.show { opacity: 1; pointer-events: auto; transform: translate(0, -50%); }
+
+/* When open this becomes one cream box wrapping the links AND the pill/audio. */
+.fmenu-main {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  border-radius: 34px;
+  background: transparent;
+  box-shadow: none;
+  transition: background 0.45s cubic-bezier(0.16,1,0.3,1),
+              box-shadow 0.45s ease,
+              gap 0.45s cubic-bezier(0.16,1,0.3,1),
+              padding 0.45s cubic-bezier(0.16,1,0.3,1);
+}
+.fmenu.open .fmenu-main {
+  background: #ece2ce;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.26);
+  gap: 24px;
+  padding: 26px 26px 26px 34px;
+}
+
+/* Right column: the pill + the audio button, stacked. */
+.fmenu-side {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+}
+
+/* The MENU pill (vertical). Cream + shadow when closed; negative teal, flat,
+   inside the box when open. */
+.fmenu-pill {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 56px;
+  height: 132px;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  border-radius: 28px;
+  background: #ece2ce;
+  color: rgb(12,106,110);
+  box-shadow: 0 14px 38px rgba(0,0,0,0.22);
+  transition: background 0.45s cubic-bezier(0.16,1,0.3,1), color 0.45s ease, box-shadow 0.45s ease;
+}
+.fmenu.open .fmenu-pill { background: rgb(12,106,110); color: #f3efe6; box-shadow: none; }
+.fmenu-pill:hover { background: #e2d7bf; }
+.fmenu.open .fmenu-pill:hover { background: rgb(9,86,90); }
+.fmenu-burger { display: flex; flex-direction: column; gap: 7px; width: 26px; transform: rotate(90deg); }
+.fmenu-burger i { display: block; height: 2.5px; border-radius: 2px; background: currentColor; }
+.fmenu-label {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: 'Manrope', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.26em;
+}
+
+/* The links, revealed inside the box to the left of the pill. */
+.fmenu-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  max-width: 0;
+  max-height: none;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-width 0.55s cubic-bezier(0.16,1,0.3,1),
+              max-height 0.55s cubic-bezier(0.16,1,0.3,1),
+              opacity 0.4s ease;
+}
+.fmenu.open .fmenu-panel { max-width: 360px; opacity: 1; }
+.fmenu-panel a {
+  display: block;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 500;
+  font-size: 26px;
+  letter-spacing: 0.005em;
+  line-height: 1;
+  white-space: nowrap;
+  color: rgb(12,106,110);
+  text-decoration: none;
+  padding: 11px 8px;
+  opacity: 0.78;
+  transition: opacity 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+.fmenu-panel a:hover { opacity: 1; transform: translateX(-3px); }
+.fmenu-panel a.active { opacity: 1; font-weight: 700; color: #14110e; }
+
+/* Audio / mute toggle — cream when closed, negative teal inside the box. */
+.fmenu-audio {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  background: #ece2ce;
+  color: rgb(12,106,110);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+  transition: background 0.4s cubic-bezier(0.16,1,0.3,1), color 0.4s ease, box-shadow 0.4s ease;
+}
+.fmenu.open .fmenu-audio { background: rgb(12,106,110); color: #f3efe6; box-shadow: none; }
+.fmenu-audio:hover { background: #e2d7bf; }
+.fmenu.open .fmenu-audio:hover { background: rgb(9,86,90); }
+.fmenu-audio svg { width: 27px; height: 27px; }
+.fmenu-audio .fmenu-spk { fill: currentColor; stroke: currentColor; stroke-width: 1; stroke-linejoin: round; }
+.fmenu-audio .fmenu-wave { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+
+/* ── Mobile: centered at the top; the box drops down from a horizontal pill ── */
+@media (max-width: 640px) {
+  .fmenu {
+    top: 14px;
+    right: auto;
+    left: 50%;
+    align-items: center;
+    transform: translate(-50%, -24px);
+  }
+  .fmenu.show { transform: translate(-50%, 0); }
+
+  .fmenu-main {
+    flex-direction: column-reverse;   /* pill row on top, links below */
+    align-items: center;
+  }
+  .fmenu.open .fmenu-main { gap: 14px; padding: 16px 22px 22px; }
+
+  .fmenu-side { flex-direction: row; justify-content: center; gap: 12px; }
+  .fmenu-pill {
+    flex-direction: row;
+    width: auto;
+    height: auto;
+    padding: 13px 24px;
+    border-radius: 26px;
+    gap: 12px;
+  }
+  .fmenu-label { writing-mode: horizontal-tb; transform: none; font-size: 15px; letter-spacing: 0.2em; }
+  .fmenu-burger { transform: none; }   /* horizontal pill → keep bars horizontal */
+  .fmenu-audio { width: 52px; height: 52px; }
+
+  .fmenu-panel {
+    max-width: none;
+    max-height: 0;
+    align-items: center;
+    text-align: center;
+  }
+  .fmenu.open .fmenu-panel { max-width: none; max-height: 60vh; }
+  .fmenu-panel a { font-size: 21px; padding: 11px 8px; }
+}
+
 /* ===== NAVIGATION ===== */
 .menu-item {
   position: relative;
