@@ -45,6 +45,8 @@ export default function Treatments() {
 
   const [open, setOpen] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [error, setError] = useState('')
   const [entered, setEntered] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -94,9 +96,37 @@ export default function Treatments() {
     entered  ? ''        : 'intro',
   ].filter(Boolean).join(' ')
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
-    setSubmitted(true)
+    if (sending) return
+    const fd = new FormData(e.currentTarget)
+    const payload = {
+      formType: 'booking',
+      nome: fd.get('nome'),
+      cognome: fd.get('cognome'),
+      email: fd.get('email'),
+      phone: fd.get('phone'),
+      treatment: fd.get('treatment'),
+      date: fd.get('date'),
+    }
+    setSending(true)
+    setError('')
+    try {
+      const r = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      if (!r.ok) {
+        const data = await r.json().catch(() => ({}))
+        throw new Error(data.error || 'Request failed')
+      }
+      setSubmitted(true)
+    } catch (err) {
+      setError(err.message || 'Something went wrong. Please try again.')
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
@@ -177,7 +207,7 @@ export default function Treatments() {
       {/* Booking modal */}
       <div className={`book-overlay ${open ? 'show' : ''}`} onClick={() => setOpen(false)}>
         <div className="book-modal" onClick={(e) => e.stopPropagation()}>
-          <button className="bk-close" onClick={() => { setOpen(false); setSubmitted(false) }}>
+          <button className="bk-close" onClick={() => { setOpen(false); setSubmitted(false); setError('') }}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
               <line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/>
             </svg>
@@ -216,7 +246,8 @@ export default function Treatments() {
                   </select>
                 </div>
                 <div className="bk-field"><label className="bk-label">Preferred date</label><input className="bk-input" type="date" name="date" required/></div>
-                <button type="submit" className="pill-btn" style={{alignSelf:'center',marginTop:8}}>SEND REQUEST</button>
+                {error && <p style={{margin:0,textAlign:'center',color:'#b23a3a',fontSize:14}}>{error}</p>}
+                <button type="submit" className="pill-btn" disabled={sending} style={{alignSelf:'center',marginTop:8,opacity:sending?0.6:1,cursor:sending?'default':'pointer'}}>{sending ? 'SENDING…' : 'SEND REQUEST'}</button>
               </form>
             </>
           ) : (

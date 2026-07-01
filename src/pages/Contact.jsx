@@ -10,13 +10,42 @@ export default function Contact() {
   const panelRef  = useRef(null)
 
   const [submitted, setSubmitted] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [error, setError] = useState('')
 
   useWaterCanvas(heroRef, canvasRef)
   useCurvedPanel(panelRef)
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
-    setSubmitted(true)
+    if (sending) return
+    const fd = new FormData(e.currentTarget)
+    const payload = {
+      formType: 'contact',
+      nome: fd.get('nome'),
+      cognome: fd.get('cognome'),
+      email: fd.get('email'),
+      phone: fd.get('phone'),
+      message: fd.get('message'),
+    }
+    setSending(true)
+    setError('')
+    try {
+      const r = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      if (!r.ok) {
+        const data = await r.json().catch(() => ({}))
+        throw new Error(data.error || 'Request failed')
+      }
+      setSubmitted(true)
+    } catch (err) {
+      setError(err.message || 'Something went wrong. Please try again.')
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
@@ -81,7 +110,8 @@ export default function Contact() {
                     <label className="bk-label">Message</label>
                     <textarea className="bk-input" name="message" rows={4} placeholder="Tell us how we can help you relax…" required style={{minHeight:96}}/>
                   </div>
-                  <button type="submit" className="pill-btn" style={{alignSelf:'flex-start',marginTop:6}}>SEND MESSAGE</button>
+                  {error && <p style={{margin:0,color:'#b23a3a',fontSize:14}}>{error}</p>}
+                  <button type="submit" className="pill-btn" disabled={sending} style={{alignSelf:'flex-start',marginTop:6,opacity:sending?0.6:1,cursor:sending?'default':'pointer'}}>{sending ? 'SENDING…' : 'SEND MESSAGE'}</button>
                 </form>
               </>
             ) : (

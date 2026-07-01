@@ -163,7 +163,7 @@ Minimal — this is a marketing site. Per-page transient state only:
 - Refs to hero canvas/panel/heading/lotus/gallery elements.
 - Animation flags (`_headingDone`, `_storyInit`, slider progress) to avoid re-firing.
 - Gallery offset/velocity (`_galleryX`, `_galVel`).
-No data fetching. Forms (Contact) would need real submission wiring in production.
+No data fetching except form submission — see **Forms & Email** below.
 
 ## Design Tokens (quick reference)
 - Colors: `#0C6A6E` (teal), `#D9D9D9` (cream), `#14110E` (hero dark), `#EFE9DD`/`#F2EEE6` (off-white), `#C5BEB1` (footer text), `#D8C8AC` (menu dot).
@@ -188,3 +188,34 @@ These are stand-in photos; swap for the client's final photography. The lotus an
 - `assets/` — images and logo
 
 Each `.dc.html` opens directly in a browser to preview the intended result. Inside, markup lives between `<x-dc>…</x-dc>` (inline styles) and the logic class lives in the trailing `<script type="text/x-dc">` block (animation + scroll logic). Read both when recreating a page; the GSAP/scroll logic is the important part to port.
+
+---
+
+## Forms & Email
+
+Both site forms — the **"Book your experience"** modal ([src/pages/Treatments.jsx](src/pages/Treatments.jsx)) and the **contact form** ([src/pages/Contact.jsx](src/pages/Contact.jsx)) — POST JSON to a single Vercel serverless function, [api/contact.js](api/contact.js), which sends **two emails per submission** via [Resend](https://resend.com):
+
+1. **Owner notification** → `OWNER_EMAIL`, with every field (reply-to is set to the visitor's address, so you can reply directly).
+2. **Customer confirmation** → the visitor, with a branded recap + thank-you. This is best-effort: if it fails the request still succeeds so the owner is always notified.
+
+### Configuration
+Set these environment variables (locally in a `.env` file — copy `.env.example` — and in **Vercel → Settings → Environment Variables** for production):
+
+| Variable | Purpose |
+|---|---|
+| `RESEND_API_KEY` | Resend API key (https://resend.com/api-keys). **Required.** |
+| `OWNER_EMAIL` | Where booking/contact notifications are delivered. |
+| `FROM_EMAIL` | Verified sender, e.g. `Aloha Massage <no-reply@yourdomain.com>`. Defaults to Resend's shared test sender. |
+
+### Going live (important)
+Until a domain is verified in Resend, `FROM_EMAIL` uses the shared test sender `onboarding@resend.dev`, and **Resend only delivers to the email address of your own Resend account** — so customer confirmations to real visitors will not be delivered yet. To enable them: verify your domain in Resend (add the DNS records it shows), then set `FROM_EMAIL` to an address on that domain. No code change needed.
+
+### Local testing
+`npm run dev` (Vite) does **not** run the serverless function. To test the emails locally, run the app with the Vercel CLI, which serves `/api` and loads `.env`:
+
+```
+npm i -g vercel
+vercel dev
+```
+
+Otherwise, the endpoint works automatically once deployed to Vercel.
